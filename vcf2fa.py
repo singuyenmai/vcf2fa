@@ -127,7 +127,7 @@ def get_snp(vcf):
         snp = None
     return snp
 
-def make_fasta(mincov, mcb, vcf_fh):
+def make_fasta(mincov, mcb, vcf_fh, prefix_name):
     vcf = Vcf(vcf_fh)
     m_dir('consensus')
     seqs = dd(lambda: [])
@@ -141,7 +141,8 @@ def make_fasta(mincov, mcb, vcf_fh):
         tmp = l.split()
         if tmp[0] != curr_chrom:
             if len(seqs) != 0:
-                out = open(path.join('consensus', '{}_consensus.fa'.format(curr_chrom)), 'w')
+			    out_name = '{}_{}_consensus.fa'.format(prefix_name,curr_chrom) if prefix_name is not None else '{}_consensus.fa'.format(curr_chrom)
+			    out = open(path.join('consensus', out_name), 'w')
                 for s in seqs.keys():
                     #write multi fasta
                     out.write('>{}\n{}\n'.format(s, ''.join(seqs[s])))
@@ -177,7 +178,8 @@ def make_fasta(mincov, mcb, vcf_fh):
             
 
     #write last curr_chrom's worth of data
-    out = open(path.join('consensus', '{}_consensus.fa'.format(curr_chrom)), 'w')
+    out_name = '{}_{}_consensus.fa'.format(prefix_name,curr_chrom) if prefix_name is not None else '{}_consensus.fa'.format(curr_chrom)
+    out = open(path.join('consensus', out_name), 'w')
     for s in seqs.keys():
         #write multi fasta
         out.write('>{}\n{}\n'.format(s, ''.join(seqs[s])))
@@ -189,6 +191,7 @@ if __name__ == '__main__':
     parser.add_argument("-m","--multicov_file", help="Your multicov file. Must be based off the ref_single_base.bed created by gen_bed_files.py and running bedtools. See readme for suggested bedtools command", type=argparse.FileType('r'), required=True)
     parser.add_argument("-v","--vcf_file", help="The vcf file generated using the same bam files used to generate the multicov bed file", type=argparse.FileType('r'), required=True)
     parser.add_argument("-c","--min_cov", help="The minimum required coverage for a base to not be masked in a sample's consensus with an 'N' ", type=int, default=7)
+    parser.add_argument("--prefix", help="Name of project or sample. If you generated different VCF files for multiple samples, set this parameter as sample name to yield corresponding multiple FASTA files. Otherwise, you can set it as name of the project.", type=str, default=None)
     args = parser.parse_args()
 
-    make_fasta(args.min_cov, args.multicov_file, args.vcf_file)
+    make_fasta(args.min_cov, args.multicov_file, args.vcf_file, args.prefix)
