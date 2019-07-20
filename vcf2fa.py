@@ -141,8 +141,8 @@ def make_fasta(mincov, mcb, vcf_fh, prefix_name):
         tmp = l.split()
         if tmp[0] != curr_chrom:
             if len(seqs) != 0:
-			    out_name = '{}_{}_consensus.fa'.format(prefix_name,curr_chrom) if prefix_name is not None else '{}_consensus.fa'.format(curr_chrom)
-			    out = open(path.join('consensus', out_name), 'w')
+                out_name = '{}_{}_consensus.fa'.format(prefix_name,curr_chrom) if prefix_name is not None else '{}_consensus.fa'.format(curr_chrom)
+                out = open(path.join('consensus', out_name), 'w')
                 for s in seqs.keys():
                     #write multi fasta
                     out.write('>{}\n{}\n'.format(s, ''.join(seqs[s])))
